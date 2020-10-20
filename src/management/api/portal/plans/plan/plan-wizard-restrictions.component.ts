@@ -96,7 +96,11 @@ const ApiPlanWizardRestrictionsComponent: ng.IComponentOptions = {
         .each(policy => this.parent.restrictionsPolicies.push(policy));
 
       this.parent.vm.stepData[2].data = this.parent.plan;
-      this.parent.moveToNextStep(this.parent.vm.stepData[2]);
+      if (this.parent.isV2()) {
+        this.parent.saveOrUpdate();
+      } else {
+        this.parent.moveToNextStep(this.parent.vm.stepData[2]);
+      }
     }
   }
 };

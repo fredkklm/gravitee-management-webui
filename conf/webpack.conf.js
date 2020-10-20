@@ -104,6 +104,18 @@ module.exports = {
       {
         from: './docs',
         to: './docs'
+      },
+      {
+        from: './node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js',
+        to: 'webcomponents/webcomponents-loader.js'
+      },
+      {
+        from: './node_modules/@gravitee/ui-components/assets/css',
+        to: 'css'
+      },
+      {
+        from: './node_modules/@gravitee/ui-components/assets/i18n',
+        to: 'i18n'
       }
     ], {
       copyUnmodified: true

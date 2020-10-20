@@ -126,6 +126,14 @@ module.exports = {
         from: './docs',
         to: './docs'
       },
+      {
+        from: './node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js',
+        to: 'webcomponents/webcomponents-loader.js'
+      },
+      {
+        from: './node_modules/@gravitee/ui-components/assets/css',
+        to: 'css'
+      },
       {from: './src/swagger-oauth2-redirect.html', to: './swagger-oauth2-redirect.html'}
     ], {
       copyUnmodified: true

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import _ = require('lodash');
-import ApiService from '../../../../../services/api.service';
+import ApiService, { isV2 } from '../../../../../services/api.service';
 import NotificationService from '../../../../../services/notification.service';
-import {StateService} from '@uirouter/core';
+import { StateService } from '@uirouter/core';
 
 class ApiEditPlanController {
 
@@ -55,18 +55,27 @@ class ApiEditPlanController {
   ) {
     'ngInject';
 
+    const stepData = [
+      {step: 1, completed: false, optional: false, data: {}},
+      {step: 2, completed: false, optional: false, data: {}},
+      {step: 3, completed: false, optional: true, data: {}},
+    ];
+
+    if (!this.isV2()) {
+      stepData.push({step: 4, completed: false, optional: true, data: {}});
+    }
+
     this.vm = {
       selectedStep: 0,
       stepProgress: 1,
-      maxStep: 4,
+      maxStep: this.isV2() ? 3 :   4,
       showBusyText: false,
-      stepData: [
-        {step: 1, completed: false, optional: false, data: {}},
-        {step: 2, completed: false, optional: false, data: {}},
-        {step: 3, completed: false, optional: true, data: {}},
-        {step: 4, completed: false, optional: true, data: {}}
-      ]
+      stepData
     };
+  }
+
+  isV2() {
+    return isV2(this.api);
   }
 
   $onInit() {
@@ -122,10 +131,10 @@ class ApiEditPlanController {
     this.vm.selectedStep = step;
   }
 
-   submitCurrentStep(stepData) {
+  submitCurrentStep(stepData) {
     this.vm.showBusyText = true;
     if (!stepData.completed) {
-      if (this.vm.selectedStep !== 4) {
+      if (this.vm.selectedStep !== this.vm.maxStep) {
         this.vm.showBusyText = false;
         // move to next step when success
         stepData.completed = true;
@@ -154,7 +163,7 @@ class ApiEditPlanController {
     // Transform security definition to json
     this.plan.securityDefinition = JSON.stringify(this.plan.securityDefinition);
 
-    this.ApiService.savePlan(this.$stateParams.apiId, this.plan).then( () => {
+    this.ApiService.savePlan(this.$stateParams.apiId, this.plan).then(() => {
       this.NotificationService.show(this.plan.name + ' has been saved successfully');
       this.$state.go(
         'management.apis.detail.portal.plans.list',
@@ -167,7 +176,7 @@ class ApiEditPlanController {
     return !_.includes(this.userTags, tag.id) || !_.includes(this.api.tags, tag.id);
   }
 
-  shouldNotEditConditions() : boolean {
+  shouldNotEditConditions(): boolean {
     return (this.plan.status === 'published' || this.plan.status === 'deprecated');
   }
 }
