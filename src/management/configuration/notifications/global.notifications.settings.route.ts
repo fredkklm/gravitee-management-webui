@@ -15,8 +15,9 @@
  */
 import NotificationSettingsService from '../../../services/notificationSettings.service';
 import AlertService from '../../../services/alert.service';
-import {Scope} from '../../../entities/scope';
+import { Scope } from '../../../entities/scope';
 import NotifierService from '../../../services/notifier.service';
+import NotificationTemplatesService from '../../../services/notificationTemplates.service';
 
 export default applicationsNotificationsRouterConfig;
 
@@ -134,5 +135,64 @@ function applicationsNotificationsRouterConfig($stateProvider) {
         notifiers: (NotifierService: NotifierService) =>
           NotifierService.list().then( (response) => response.data)
       }
-    });
+    })
+    .state('management.settings.notificationTemplates', {
+      url: '/notification-templates',
+      component: 'notificationTemplatesComponent',
+      data: {
+        menu: null,
+        perms: {
+          only: ['organization-notification_templates-r']
+        }
+      },
+      resolve: {
+        notificationTemplates:
+          (NotificationTemplatesService: NotificationTemplatesService) => NotificationTemplatesService.getNotificationTemplates()
+            .then(response => response.data),
+      }
+    })
+    .state('management.settings.notificationTemplate', {
+      url: '/notification-templates/:notifTemplateId?email&portal',
+      component: 'notificationTemplateComponent',
+      data: {
+        menu: null,
+        docs: {
+          page: 'management-configuration-notification-template'
+        },
+        perms: {
+          only: ['organization-notification_templates-r']
+        }
+      },
+      resolve: {
+        portalNotifTemplate:
+          (NotificationTemplatesService: NotificationTemplatesService, $stateParams) => {
+            if ($stateParams.portal) {
+              let notifTplId;
+              if ($stateParams.notifTemplateId.endsWith('html')) {
+                notifTplId = $stateParams.notifTemplateId;
+              } else {
+                notifTplId = $stateParams.notifTemplateId + '.PORTAL';
+              }
+
+              return NotificationTemplatesService.getNotificationTemplate(notifTplId)
+                .then(response => response.data, reason => null);
+            }
+          },
+        emailNotifTemplate:
+          (NotificationTemplatesService: NotificationTemplatesService, $stateParams) => {
+            if ($stateParams.email) {
+              let notifTplId;
+              if ($stateParams.notifTemplateId.endsWith('html')) {
+                notifTplId = $stateParams.notifTemplateId;
+              } else {
+                notifTplId = $stateParams.notifTemplateId + '.EMAIL';
+              }
+
+              return NotificationTemplatesService.getNotificationTemplate(notifTplId)
+                .then(response => response.data, reason => null);
+            }
+          },
+      }
+    })
+  ;
 }
