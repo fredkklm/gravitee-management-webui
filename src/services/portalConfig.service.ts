@@ -31,6 +31,10 @@ class PortalConfigService {
   get() {
     return this.$http.get(this.portalURL);
   }
+
+  isReadonly(settings: any, property: string): boolean {
+    return settings.metadata.readonly.some(key => key === property);
+  }
 }
 
 export default PortalConfigService;

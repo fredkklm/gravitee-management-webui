@@ -97,6 +97,10 @@ const IdentityProvidersComponent: ng.IComponentOptions = {
         Constants.authentication.localLogin =  response.data.authentication.localLogin;
       });
     };
+
+    this.isReadonlySetting = (property: string): boolean => {
+      return PortalConfigService.isReadonly(this.settings, property);
+    };
   }
 };
 
